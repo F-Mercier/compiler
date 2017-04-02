@@ -224,6 +224,12 @@ public class Forest {
 				else {
 					result = false;
 					System.out.println("!Analyse Atom TERM " + ((Atom) n).cod);
+					System.out.println(((Atom) n).cod + " != " + aScan.scan(line, aScan.getPos()).cod);
+					System.out.println("SCAN : " + aScan.scan(line, aScan.getPos()).cod + aScan.scan(line, aScan.getPos()).action + aScan.scan(line, aScan.getPos()).aType);
+					System.out.println("ATOM : " + ((Atom) n).cod + ((Atom) n).action + ((Atom) n).aType);
+					System.out.println(pos);
+					System.out.println(line.charAt(pos));
+					System.out.println(line);
 				}
 				break;
 			case NTERM:

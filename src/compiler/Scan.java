@@ -25,12 +25,11 @@ public class Scan {
 			tmp = new LexicalUnit("IDNTER", action, AtomType.NTERM, unit);
 			
 			setPos(end);
-			System.out.println(unit);
 			return tmp;
 		}
 		else {
 			// ELTER
-			if ((unit.equals("\'"))) {
+			if ((unit.equals("'"))) {
 				start = pos + 1;
 				end = line.indexOf("'", start);
 				unit = line.substring(start, end);
@@ -43,7 +42,6 @@ public class Scan {
 				tmp = new LexicalUnit("ELTER", action, AtomType.NTERM, unit);
 				
 				setPos(end + 1);
-				System.out.println(unit);
 				return tmp;
 			}
 			if (unit.equals("-")) {
@@ -51,18 +49,16 @@ public class Scan {
 					unit = line.substring(pos, pos + 2);
 					tmp = new LexicalUnit(unit, action, AtomType.TERM, unit);
 					setPos(end + 2);
-					System.out.println(unit);
 					return tmp;
 				}
 			}
-			if (unit.equals("[")) {
-				start = pos + 1;
-				end = line.indexOf("]", start);
-				unit = line.substring(start, end);
-				System.out.println(unit);
-			}
-				
-			return new LexicalUnit(unit, action, AtomType.NTERM, unit); // shitty but necessary for now until all cases arent there
+			// TODO deal with useless characters ???
+			
+			unit = line.substring(pos, line.length());
+			tmp = new LexicalUnit("IDNTER", action, AtomType.TERM, unit);
+			
+			setPos(line.length() - 1);
+			return tmp;
 		}
 	}
 	
