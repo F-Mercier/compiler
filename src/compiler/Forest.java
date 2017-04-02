@@ -7,6 +7,7 @@ public class Forest {
 	public ArrayList<Node> forest = new ArrayList<Node>(5);
 	public String space = "   ";
 	public Stack<Node> stack = new Stack<Node>();
+	public Scan aScan = new Scan();
 	
 	public void generateForest() {
 		Node S = new Conc(
@@ -195,7 +196,7 @@ public class Forest {
 		case ATOM:
 			switch(((Atom) n).aType) {
 			case TERM:
-				if (((Atom) n).cod == "") { // p.cod == code ??? scan.code ???
+				if (((Atom) n).cod.equals(aScan.scan("test").cod)) { // p.cod == code ??? scan.code ???
 					result = true;
 					if (((Atom) n).action != 0) {
 						gZeroAction(((Atom) n).cod, ((Atom) n).action, ((Atom) n).aType);
