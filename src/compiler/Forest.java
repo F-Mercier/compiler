@@ -48,9 +48,10 @@ public class Forest {
 		
 		Node T = new Conc(
 				new Atom("F", 0, AtomType.NTERM),
-				new Conc(
-						new Atom(".", 0, AtomType.TERM),
-						new Atom("F", 4, AtomType.NTERM)));
+				new Star(
+						new Conc(
+								new Atom(".", 0, AtomType.TERM),
+								new Atom("F", 4, AtomType.NTERM))));
 		
 		T.setName("T");
 		
@@ -91,6 +92,16 @@ public class Forest {
 		}
 	}
 	
+	public void showForestBis() {
+		System.out.println("==============\n||  FOREST  ||\n==============");
+		for(int i = 0 ; i < 5 ; i++) {
+			System.out.print(forest.get(i).name + " -> ");
+			showTreeBis(forest.get(i));
+			if (i < 5) System.out.println(",");
+			else System.out.println(";");
+		}
+	}
+	
 	public void showTree(Node n, String space) {		
 		if (n instanceof Conc) ((Conc) n).setCodeAtom();
 		if (n instanceof Union) ((Union) n).setCodeAtom();
@@ -121,6 +132,38 @@ public class Forest {
 		case ATOM:
 			System.out.println("|" + space + "ATOM");
 			((Atom) n).displayAtom(space);
+			break;
+		}
+	}
+	
+	public void showTreeBis(Node n) {
+		if (n instanceof Conc) ((Conc) n).setCodeAtom();
+		if (n instanceof Union) ((Union) n).setCodeAtom();
+		if (n instanceof Star) ((Star) n).setCodeAtom();
+		if (n instanceof Un) ((Un) n).setCodeAtom();
+		if (n instanceof Atom) ((Atom) n).setCodeAtom();
+		
+		switch(n.codeAtom) {
+		case CONC: 
+			showTreeBis(((Conc) n).left);
+			System.out.print(" . ");
+			showTreeBis(((Conc) n).right);
+			break;
+		case UNION:
+			showTreeBis(((Union) n).left);
+			System.out.print(" + ");
+			showTreeBis(((Union) n).right);
+			break;
+		case STAR:
+			System.out.print("[");
+			showTreeBis(((Star) n).node);
+			System.out.print("]");
+			break;
+		case UN:
+			showTreeBis(((Un) n).node);
+			break;
+		case ATOM:
+			((Atom) n).displayAtomBis();
 			break;
 		}
 	}

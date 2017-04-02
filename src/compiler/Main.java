@@ -8,10 +8,9 @@ public class Main {
 		aForest.generateForest();
 		
 		aForest.showForest();
+		aForest.showForestBis();
 
 		aForest.verifAnalyze();
-		
-		aForest.scan("test");
 	}
 
 }
