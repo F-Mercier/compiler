@@ -27,7 +27,11 @@ public class Atom extends Node {
 	
 	public void displayAtomBis() {
 		if (aType == AtomType.NTERM) System.out.print(cod);
-		else System.out.print("\'" + cod + "\'");
-		if (action > 0) System.out.print("#" + action);
+		else {
+			System.out.print("\'" + cod);
+			if (action > 0) System.out.print("#" + action);
+			System.out.print("\'");
+		}
+		
 	}
 }

@@ -4,10 +4,14 @@ import java.util.ArrayList;
 
 public class PCode {
 	public int spx, c0 = 0;
-	public ArrayList<Integer> pilex = new ArrayList<Integer>();
+	public ArrayList<Integer> pilex = new ArrayList<Integer>(); // sans doute pas une liste d'ints (variables...)
 	public ArrayList<Integer> pcode = new ArrayList<Integer>();
 	public ArrayList<String> dicot = new ArrayList<String>();
 	public ArrayList<String> dicont = new ArrayList<String>();
+	
+	public PCode() {
+		super();
+	}
 	
 	public void interpret(int inst) { // TODO check implement LDA, LDV, LDC, JMP, RD, AFF
 		// TODO check algo and implement JIF, SUP, SUPE, INF, INFE, EG, DIFF, AND, OR, NOT, ADD, SUB, DIV, MULT, NEG, INC, DEC, RDLN, WRT, WRTLN, STOP

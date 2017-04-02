@@ -1,0 +1,18 @@
+program -> 'program' . 'identif#30' . ';' . (|decl_var|) . block . ".",
+decl_var -> 'var' . 'identif#31' . ';' . [decl_var],
+block -> 'start;' . inst . ';' . [inst] . 'trats;#29',
+inst -> (|if + loop + assign + read + write|) . ';',
+if -> 'if' . bool#5 . 'then' . [inst] . ['else' . [inst]] . 'fi;',
+loop -> 'while' . bool . ';' . [inst] . 'elihw;',
+assign -> 'identif#32' . '=' . value . [opari . value] . ';',
+value -> '1' + '2' + '3' + '4' + '5' + '6' + '7' + '8' + '9' + '0',
+read -> (|'read' + 'readln'|) . 'identif#33' . ';',
+write -> (|'write' + 'writeln'|) . 'identif#34' . value . ';', 
+bool -> tbool . ['or' . tbool],
+tbool -> fbool . ['and' . fbool],
+fbool -> pbool + (|'not' . pbool|),
+pbool -> (|exp . oprel . exp|) + boolean,
+oprel -> '>#8' + '>=#9' + '<#10' + '<=#11' + '==#12' + '!=#13',
+opari -> '+#17' + '-#18' + '/#19' + '*#20',
+boolean -> 'true' + 'false';
+// TODO finir les actions

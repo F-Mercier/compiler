@@ -1,5 +1,9 @@
 package compiler;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Stack;
 
@@ -8,6 +12,8 @@ public class Forest {
 	public String space = "   ";
 	public Stack<Node> stack = new Stack<Node>();
 	public Scan aScan = new Scan();
+	public PCode pCode = new PCode();
+	public static int pos;
 	
 	public void generateForest() {
 		Node S = new Conc(
@@ -170,7 +176,19 @@ public class Forest {
 		else System.out.println("!Analyse pas OK");
 	}
 	
-	public boolean analyze(Node n) { // TODO fix the TERM case
+	public boolean analyze(Node n) { // TODO fix the ATOM/TERM case
+		BufferedReader br = null;
+		String line = null;
+		try {
+			br = new BufferedReader(new FileReader("src/g0"));
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		try {
+			line = br.readLine();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		boolean result = true;
 		switch(n.codeAtom) {
 		case CONC: 
@@ -196,12 +214,12 @@ public class Forest {
 		case ATOM:
 			switch(((Atom) n).aType) {
 			case TERM:
-				if (((Atom) n).cod.equals(aScan.scan("test").cod)) { // p.cod == code ??? scan.code ???
+				if (((Atom) n).cod.equals(aScan.scan(line, aScan.getPos()).cod)) {
 					result = true;
 					if (((Atom) n).action != 0) {
 						gZeroAction(((Atom) n).cod, ((Atom) n).action, ((Atom) n).aType);
 					}
-					//scand ???
+					pos = aScan.getPos();
 				}
 				else {
 					result = false;
@@ -236,7 +254,7 @@ public class Forest {
 		return pos;
 	}
 	
-	public void gZeroAction(String cod, int action, AtomType aType) { // TODO make search in dictionnaries, replace cod by search
+	public void gZeroAction(String cod, int action, AtomType aType) { // TODO make search in dictionaries, replace cod by search
 		Node n1, n2 = null;
 		
 		switch(action) {
@@ -275,5 +293,9 @@ public class Forest {
 			stack.push(new Un(n1));
 			break;
 		}
+	}
+	
+	public static void setPos(int pos2) {
+		pos = pos2;
 	}
 }
