@@ -7,11 +7,6 @@ public class Forest {
 	public ArrayList<Node> forest = new ArrayList<Node>(5);
 	public String space = "   ";
 	public Stack<Node> stack = new Stack<Node>();
-	public int spx, c0 = 0;
-	public ArrayList<Integer> pilex = new ArrayList<Integer>();
-	public ArrayList<Integer> pcode = new ArrayList<Integer>();
-	public ArrayList<String> dicot = new ArrayList<String>();
-	public ArrayList<String> dicont = new ArrayList<String>();
 	
 	public void generateForest() {
 		Node S = new Conc(
@@ -97,7 +92,7 @@ public class Forest {
 		for(int i = 0 ; i < 5 ; i++) {
 			System.out.print(forest.get(i).name + " -> ");
 			showTreeBis(forest.get(i));
-			if (i < 5) System.out.println(",");
+			if (i < 4) System.out.println(",");
 			else System.out.println(";");
 		}
 	}
@@ -200,10 +195,10 @@ public class Forest {
 		case ATOM:
 			switch(((Atom) n).aType) {
 			case TERM:
-				if (((Atom) n).cod == "") { // p.cod == code ???
+				if (((Atom) n).cod == "") { // p.cod == code ??? scan.code ???
 					result = true;
 					if (((Atom) n).action != 0) {
-						gZeroAction(((Atom) n).action, ((Atom) n).aType);
+						gZeroAction(((Atom) n).cod, ((Atom) n).action, ((Atom) n).aType);
 					}
 					//scand ???
 				}
@@ -215,7 +210,7 @@ public class Forest {
 			case NTERM:
 				if (analyze(forest.get(findNode(((Atom) n).cod)))) {
 					if (((Atom) n).action != 0) {
-						gZeroAction(((Atom) n).action, ((Atom) n).aType);
+						gZeroAction(((Atom) n).cod, ((Atom) n).action, ((Atom) n).aType);
 					}
 					result = true;
 				}
@@ -240,7 +235,7 @@ public class Forest {
 		return pos;
 	}
 	
-	public void gZeroAction(int action, AtomType aType) { // TODO make search in dictionnaries
+	public void gZeroAction(String cod, int action, AtomType aType) { // TODO make search in dictionnaries, replace cod by search
 		Node n1, n2 = null;
 		
 		switch(action) {
@@ -250,7 +245,7 @@ public class Forest {
 			forest.add(n1);
 			break;
 		case 2:
-			stack.push(new Atom("", action, aType)); // Recherche(DICONT) ???
+			stack.push(new Atom(cod, action, aType)); // Recherche(DICONT) ???
 			break;
 		case 3:
 			n1 = stack.pop();
@@ -264,10 +259,10 @@ public class Forest {
 			break;
 		case 5:
 			if (aType == AtomType.TERM) {
-				stack.push(new Atom("", action, AtomType.TERM)); // Recherche(DICOT) ???
+				stack.push(new Atom(cod, action, AtomType.TERM)); // Recherche(DICOT) ???
 			}
 			else {
-				stack.push(new Atom("", action, AtomType.NTERM)); // Recherche(DICONT) ???
+				stack.push(new Atom(cod, action, AtomType.NTERM)); // Recherche(DICONT) ???
 			}
 			break;
 		case 6:
@@ -278,151 +273,6 @@ public class Forest {
 			n1 = stack.pop();
 			stack.push(new Un(n1));
 			break;
-		}
-	}
-	
-	public void interpret(int inst) { // TODO check JIF, SUP, SUPE, INF, INFE, EG, DIFF, AND, OR, NOT, ADD, SUB, DIV, MULT, NEG, INC, DEC		make JSR, RSR, RDLN, WRT, WRTLN, STOP
-		Instruction tmp = Instruction.valueOf(inst);
-		
-		switch(tmp) {
-		case LDA: // chargement adresse
-			spx++;
-			pilex.add(spx, pcode.get(c0 + 1));
-			c0 = c0 + 2;
-			break;
-		case LDV: // chargement valeur
-			spx++;
-			pilex.add(spx, pilex.get(pcode.get(c0 + 1)));
-			c0 = c0 + 2;
-			break;
-		case LDC: // chargement constante
-			spx++;
-			pilex.add(spx, pcode.get(c0 + 1));
-			c0 = c0 + 2;
-			break;
-		case JMP: // saut adresse
-			c0 = pcode.get(c0 + 1);
-			break;
-		case JIF: // saut adresse si faux
-			if(pilex.get(spx) == 1) c0 = pcode.get(c0 + 1);
-			break;
-		case JSR: // saut sous-routine
-			break;
-		case RSR: // retour sous-routine
-			break;
-		case SUP: // >
-			if(pilex.get(spx) > pilex.get(spx - 1)) {
-				spx++;
-				pilex.add(spx, 1);
-			}
-			break;
-		case SUPE: // >=
-			if(pilex.get(spx) >= pilex.get(spx - 1)) {
-				spx++;
-				pilex.add(spx, 1);
-			}
-			break;
-		case INF: // <
-			if(pilex.get(spx) < pilex.get(spx - 1)) {
-				spx++;
-				pilex.add(spx, 1);
-			}
-			break;
-		case INFE: // <=
-			if(pilex.get(spx) <= pilex.get(spx - 1)) {
-				spx++;
-				pilex.add(spx, 1);
-			}
-			break;
-		case EG: // =
-			if(pilex.get(spx) == pilex.get(spx - 1)) {
-				spx++;
-				pilex.add(spx, 1);
-			}
-			break;
-		case DIFF: // !=
-			if(pilex.get(spx) != pilex.get(spx - 1)) {
-				spx++;
-				pilex.add(spx, 1);
-			}
-			break;
-		case AND:
-			if(pilex.get(spx) + pilex.get(spx - 1) == 2) {
-				spx++;
-				pilex.add(spx, 1);
-			}
-			break;
-		case OR:
-			if(pilex.get(spx) + pilex.get(spx - 1) == 1) {
-				spx++;
-				pilex.add(spx, 1);
-			}
-			break;
-		case NOT:
-			pilex.add(spx, - pilex.get(spx));
-			break;
-		case ADD: // +
-			spx++;
-			pilex.add(spx, pilex.get(spx - 2) + pilex.get(spx - 1));
-			break;
-		case SUB: // -
-			spx++;
-			pilex.add(spx, pilex.get(spx - 2) - pilex.get(spx - 1));
-			break;
-		case DIV: // /
-			spx++;
-			pilex.add(spx, pilex.get(spx - 2) / pilex.get(spx - 1));
-			break;
-		case MULT: // *
-			spx++;
-			pilex.add(spx, pilex.get(spx - 2) * pilex.get(spx - 1));
-			break;
-		case NEG:
-			pilex.add(spx, - pilex.get(spx));
-			break;
-		case INC: // ++
-			pilex.add(spx, pilex.get(spx) + 1);
-			break;
-		case DEC: // --
-			pilex.add(spx, pilex.get(spx) - 1);
-			break;
-		case RD: // lecture
-			spx++;
-			pilex.add(spx, 0); // pilex[spx] = scan() ???
-			c0++;
-			break;
-		case RDLN: // lecture retour
-			break;
-		case WRT: // ecriture
-			break;
-		case WRTLN: // ecriture retour
-			break;
-		case AFF: // affecter
-			pilex.add(pilex.get(spx - 1), pilex.get(spx));
-			spx = spx - 2;
-			c0++;
-			break;
-		case STOP: // arret
-			break;
-		}
-	}
-	
-	public void execut() {
-		while(pcode.get(c0) != Instruction.STOP.getPos()) {
-			interpret(pcode.get(c0));
-		}
-	}
-
-	public void scan(String line) { // TODO find if return type needed
-		scanUnit(line, 0);
-	}
-
-	public void scanUnit(String line, int pos) { // TODO everything
-		String unit = line.substring(pos, pos + 1);
-		System.out.println(unit + " scanned");
-		
-		if(pos < (line.length() - 1)) {
-			scanUnit(line, pos + 1);
 		}
 	}
 }
