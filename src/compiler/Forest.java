@@ -5,8 +5,13 @@ import java.util.Stack;
 
 public class Forest {
 	public ArrayList<Node> forest = new ArrayList<Node>(5);
-	public String space = "    ";
+	public String space = "   ";
 	public Stack<Node> stack = new Stack<Node>();
+	public int spx, c0 = 0;
+	public ArrayList<Integer> pilex = new ArrayList<Integer>();
+	public ArrayList<Integer> pcode = new ArrayList<Integer>();
+	public ArrayList<String> dicot = new ArrayList<String>();
+	public ArrayList<String> dicont = new ArrayList<String>();
 	
 	public void generateForest() {
 		Node S = new Conc(
@@ -79,13 +84,14 @@ public class Forest {
 	}
 	
 	public void showForest() {
+		System.out.println("==============\n||  FOREST  ||\n==============");
 		for(int i = 0 ; i < 5 ; i++) {
 			System.out.println("=====" + forest.get(i).name + "=====");
 			showTree(forest.get(i), space);
 		}
 	}
 	
-	public void showTree(Node n, String space) {
+	public void showTree(Node n, String space) {		
 		if (n instanceof Conc) ((Conc) n).setCodeAtom();
 		if (n instanceof Union) ((Union) n).setCodeAtom();
 		if (n instanceof Star) ((Star) n).setCodeAtom();
@@ -95,21 +101,22 @@ public class Forest {
 		switch(n.codeAtom) {
 		case CONC: 
 			System.out.println("|" + space + "CONC");
-			showTree(((Conc) n).left, space + "    ");
-			showTree(((Conc) n).right, space + "    ");
+			showTree(((Conc) n).left, space + "|   ");
+			System.out.println("|" + space + "|    ");
+			showTree(((Conc) n).right, space + "|   ");
 			break;
 		case UNION:
 			System.out.println("|" + space + "UNION");
-			showTree(((Union) n).left, space + "    ");
-			showTree(((Union) n).right, space + "    ");
+			showTree(((Union) n).left, space + "|   ");
+			showTree(((Union) n).right, space + "|   ");
 			break;
 		case STAR:
 			System.out.println("|" + space + "STAR");
-			showTree(((Star) n).node, space + "    ");
+			showTree(((Star) n).node, space + "|   ");
 			break;
 		case UN:
 			System.out.println("|" + space + "UN");
-			showTree(((Un) n).node, space + "    ");
+			showTree(((Un) n).node, space + "|   ");
 			break;
 		case ATOM:
 			System.out.println("|" + space + "ATOM");
@@ -118,7 +125,13 @@ public class Forest {
 		}
 	}
 	
-	public boolean analyze(Node n) {
+	public void verifAnalyze() {
+		System.out.println("===============\n||  ANALYSE  ||\n===============");
+		if (analyze(forest.get(0))) System.out.println("Analyse OK");
+		else System.out.println("!Analyse pas OK");
+	}
+	
+	public boolean analyze(Node n) { // TODO fix the TERM case
 		boolean result = true;
 		switch(n.codeAtom) {
 		case CONC: 
@@ -184,7 +197,7 @@ public class Forest {
 		return pos;
 	}
 	
-	public void gZeroAction(int action, AtomType aType) {
+	public void gZeroAction(int action, AtomType aType) { // TODO make search in dictionnaries
 		Node n1, n2 = null;
 		
 		switch(action) {
@@ -194,7 +207,7 @@ public class Forest {
 			forest.add(n1);
 			break;
 		case 2:
-			stack.push(new Atom("", action, aType)); // Recherche(DICONT)
+			stack.push(new Atom("", action, aType)); // Recherche(DICONT) ???
 			break;
 		case 3:
 			n1 = stack.pop();
@@ -222,6 +235,151 @@ public class Forest {
 			n1 = stack.pop();
 			stack.push(new Un(n1));
 			break;
+		}
+	}
+	
+	public void interpret(int inst) { // TODO check JIF, SUP, SUPE, INF, INFE, EG, DIFF, AND, OR, NOT, ADD, SUB, DIV, MULT, NEG, INC, DEC		make JSR, RSR, RDLN, WRT, WRTLN, STOP
+		Instruction tmp = Instruction.valueOf(inst);
+		
+		switch(tmp) {
+		case LDA: // chargement adresse
+			spx++;
+			pilex.add(spx, pcode.get(c0 + 1));
+			c0 = c0 + 2;
+			break;
+		case LDV: // chargement valeur
+			spx++;
+			pilex.add(spx, pilex.get(pcode.get(c0 + 1)));
+			c0 = c0 + 2;
+			break;
+		case LDC: // chargement constante
+			spx++;
+			pilex.add(spx, pcode.get(c0 + 1));
+			c0 = c0 + 2;
+			break;
+		case JMP: // saut adresse
+			c0 = pcode.get(c0 + 1);
+			break;
+		case JIF: // saut adresse si faux
+			if(pilex.get(spx) == 1) c0 = pcode.get(c0 + 1);
+			break;
+		case JSR: // saut sous-routine
+			break;
+		case RSR: // retour sous-routine
+			break;
+		case SUP: // >
+			if(pilex.get(spx) > pilex.get(spx - 1)) {
+				spx++;
+				pilex.add(spx, 1);
+			}
+			break;
+		case SUPE: // >=
+			if(pilex.get(spx) >= pilex.get(spx - 1)) {
+				spx++;
+				pilex.add(spx, 1);
+			}
+			break;
+		case INF: // <
+			if(pilex.get(spx) < pilex.get(spx - 1)) {
+				spx++;
+				pilex.add(spx, 1);
+			}
+			break;
+		case INFE: // <=
+			if(pilex.get(spx) <= pilex.get(spx - 1)) {
+				spx++;
+				pilex.add(spx, 1);
+			}
+			break;
+		case EG: // =
+			if(pilex.get(spx) == pilex.get(spx - 1)) {
+				spx++;
+				pilex.add(spx, 1);
+			}
+			break;
+		case DIFF: // !=
+			if(pilex.get(spx) != pilex.get(spx - 1)) {
+				spx++;
+				pilex.add(spx, 1);
+			}
+			break;
+		case AND:
+			if(pilex.get(spx) + pilex.get(spx - 1) == 2) {
+				spx++;
+				pilex.add(spx, 1);
+			}
+			break;
+		case OR:
+			if(pilex.get(spx) + pilex.get(spx - 1) == 1) {
+				spx++;
+				pilex.add(spx, 1);
+			}
+			break;
+		case NOT:
+			pilex.add(spx, - pilex.get(spx));
+			break;
+		case ADD: // +
+			spx++;
+			pilex.add(spx, pilex.get(spx - 2) + pilex.get(spx - 1));
+			break;
+		case SUB: // -
+			spx++;
+			pilex.add(spx, pilex.get(spx - 2) - pilex.get(spx - 1));
+			break;
+		case DIV: // /
+			spx++;
+			pilex.add(spx, pilex.get(spx - 2) / pilex.get(spx - 1));
+			break;
+		case MULT: // *
+			spx++;
+			pilex.add(spx, pilex.get(spx - 2) * pilex.get(spx - 1));
+			break;
+		case NEG:
+			pilex.add(spx, - pilex.get(spx));
+			break;
+		case INC: // ++
+			pilex.add(spx, pilex.get(spx) + 1);
+			break;
+		case DEC: // --
+			pilex.add(spx, pilex.get(spx) - 1);
+			break;
+		case RD: // lecture
+			spx++;
+			pilex.add(spx, 0); // pilex[spx] = scan() ???
+			c0++;
+			break;
+		case RDLN: // lecture retour
+			break;
+		case WRT: // ecriture
+			break;
+		case WRTLN: // ecriture retour
+			break;
+		case AFF: // affecter
+			pilex.add(pilex.get(spx - 1), pilex.get(spx));
+			spx = spx - 2;
+			c0++;
+			break;
+		case STOP: // arret
+			break;
+		}
+	}
+	
+	public void execut() {
+		while(pcode.get(c0) != Instruction.STOP.getPos()) {
+			interpret(pcode.get(c0));
+		}
+	}
+
+	public void scan(String line) { // TODO find if return type needed
+		scanUnit(line, 0);
+	}
+
+	public void scanUnit(String line, int pos) { // TODO everything
+		String unit = line.substring(pos, pos + 1);
+		System.out.println(unit + " scanned");
+		
+		if(pos < (line.length() - 1)) {
+			scanUnit(line, pos + 1);
 		}
 	}
 }

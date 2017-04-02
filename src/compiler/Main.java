@@ -8,15 +8,10 @@ public class Main {
 		aForest.generateForest();
 		
 		aForest.showForest();
+
+		aForest.verifAnalyze();
 		
-		System.out.println(aForest.findNode("S"));
-		System.out.println(aForest.findNode("N"));
-		System.out.println(aForest.findNode("E"));
-		System.out.println(aForest.findNode("T"));
-		System.out.println(aForest.findNode("F"));
-		
-		if (aForest.analyze(aForest.forest.get(4))) System.out.println("Analyse OK");
-		else System.out.println("Analyse pas OK");
+		aForest.scan("test");
 	}
 
 }
